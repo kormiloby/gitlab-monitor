@@ -50,7 +50,9 @@
       zoom: 1,
       loaded: false,
       configured: false,
-      config: ''
+      config: '',
+      image: '',
+      background: false,
     }),
     computed: {
       sortedProjects() {
@@ -67,6 +69,12 @@
     },
     beforeMount() {
       this.reloadConfig()
+    },
+    mounted() {
+      if (typeof Config.root.linkToBackgroundImage != "undefined") {
+        let body = document.getElementsByTagName('body')[0];
+        body.style.backgroundImage = 'url('+Config.root.linkToBackgroundImage+')';
+      }
     },
     beforeDestroy() {
       clearInterval(this.refreshIntervalId)
@@ -298,6 +306,14 @@
       &:hover {
         opacity: 1;
       }
+    }
+
+    .background {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .error {
