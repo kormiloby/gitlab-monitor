@@ -72,8 +72,8 @@
     },
     mounted() {
       if (typeof Config.root.linkToBackgroundImage != "undefined") {
-        let body = document.getElementsByTagName('body')[0];
-        body.style.backgroundImage = 'url('+Config.root.linkToBackgroundImage+')';
+        let html = document.getElementsByTagName('html')[0];
+        html.style.backgroundImage = 'url('+Config.root.linkToBackgroundImage+')';
       }
     },
     beforeDestroy() {
