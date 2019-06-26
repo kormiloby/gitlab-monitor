@@ -50,9 +50,7 @@
       zoom: 1,
       loaded: false,
       configured: false,
-      config: '',
-      image: '',
-      background: false,
+      config: ''
     }),
     computed: {
       sortedProjects() {
@@ -73,7 +71,7 @@
     mounted() {
       if (typeof Config.root.linkToBackgroundImage != "undefined") {
         let html = document.getElementsByTagName('html')[0];
-        html.style.backgroundImage = 'url('+Config.root.linkToBackgroundImage+')';
+        html.style.backgroundImage = 'url(' + Config.root.linkToBackgroundImage + ')';
       }
     },
     beforeDestroy() {
@@ -306,14 +304,6 @@
       &:hover {
         opacity: 1;
       }
-    }
-
-    .background {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
     }
 
     .error {
