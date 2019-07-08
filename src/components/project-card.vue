@@ -109,42 +109,50 @@
             return
           }
 
-          let configuredDefaultBranch = Config.root.projectFilter['*'].default || this.project.default_branch
+          let configuredDefaultBranches = Config.root.projectFilter['*'].default || this.project.default_branch
 
-          if (Config.root.projectFilter.hasOwnProperty(this.project.path_with_namespace)) {
-            configuredDefaultBranch = Config.root.projectFilter[this.project.path_with_namespace].default || this.project.default_branch
-          }
+          configuredDefaultBranches = configuredDefaultBranches.split('||');
 
-          if (
-            pipelines &&
-            this.project &&
-            !!pipelines[configuredDefaultBranch] &&
-            pipelines[configuredDefaultBranch].length > 0
-          ) {
+          configuredDefaultBranches.forEach((configuredDefaultBranch) => {
+            configuredDefaultBranch = configuredDefaultBranch.trim();
 
-            if ( // Play sound alert if default branch status changes to failed
-              Config.root.linkToFailureSound != null &&
-              this.status !== 'failed' && !!this.status &&
-              pipelines[configuredDefaultBranch][0].status === 'failed'
+            if (Config.root.projectFilter.hasOwnProperty(this.project.path_with_namespace)) {
+              configuredDefaultBranch = Config.root.projectFilter[this.project.path_with_namespace].default || this.project.default_branch
+            }
+
+            if (
+              pipelines &&
+              this.project &&
+              !!pipelines[configuredDefaultBranch] &&
+              pipelines[configuredDefaultBranch].length > 0
             ) {
-              const alarmSound = new Audio(Config.root.linkToFailureSound)
-              alarmSound.play()
-            }
 
-            this.status = pipelines[configuredDefaultBranch][0].status
+              if ( // Play sound alert if default branch status changes to failed
+                Config.root.linkToFailureSound != null &&
+                this.status !== 'failed' && !!this.status &&
+                pipelines[configuredDefaultBranch][0].status === 'failed'
+              ) {
+                const alarmSound = new Audio(Config.root.linkToFailureSound)
+                alarmSound.play()
+              }
 
-            switch (pipelines[configuredDefaultBranch][0].status) {
-              case 'pending':
-              case 'running':
-                this.refreshInterval = 5000
-                break
-              default:
-                this.refreshInterval = 15000
+              if (this.status !== 'failed') {
+                this.status = pipelines[configuredDefaultBranch][0].status
+              }
+
+              switch (pipelines[configuredDefaultBranch][0].status) {
+                case 'pending':
+                case 'running':
+                  this.refreshInterval = 5000
+                  break
+                default:
+                  this.refreshInterval = 15000
+              }
+            } else {
+              this.status = ''
+              this.refreshInterval = 60000
             }
-          } else {
-            this.status = ''
-            this.refreshInterval = 60000
-          }
+          });
         }
       },
       refreshInterval(newInterval, oldInterval) {
@@ -277,6 +285,7 @@
         this.refNames = refNames
         this.pipelineCount = count
         this.loading = false
+
       },
       async fetchBadges() {
         const badges = await this.$api(`/projects/${this.projectId}/badges`)
